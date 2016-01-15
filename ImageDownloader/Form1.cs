@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -16,6 +18,8 @@ namespace ImageDownloader
     {
 
         Grabber grabber;
+        Downloader downloader;
+
         public Form1()
         {
              const string apiKey = "AIzaSyC3u5jYwwZVqSq-JQge2gYHqDKErrCo1Sc";
@@ -28,7 +32,21 @@ namespace ImageDownloader
 
         private void search_Click(object sender, EventArgs e)
         {
-            grabber.search(searchBox.Text.ToString());
+            downloader = new Downloader();
+            ArrayList temp = grabber.search(searchBox.Text.ToString());
+            Console.WriteLine(temp.Count);
+            try
+            {
+                downloader.download(temp, searchBox.Text);
+            }
+            catch (Exception exception)
+            {
+                
+                Console.WriteLine(exception);
+            }
+            
+            
+
             
         }
 

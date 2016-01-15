@@ -1,6 +1,7 @@
 ﻿using Google.Apis.Customsearch.v1;
 using Google.Apis.Customsearch.v1.Data;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,9 +13,12 @@ namespace ImageDownloader
     {
         CustomsearchService customSearchService;
         string searchEngineId;
+        ArrayList objArray;
+
 
         public Grabber(string apiKey, string searchEngineId)
         {
+            
             customSearchService = new CustomsearchService(new Google.Apis.Services.BaseClientService.Initializer() { ApiKey = apiKey });
             this.searchEngineId = searchEngineId;
         }
@@ -24,35 +28,31 @@ namespace ImageDownloader
 
 
 
-        public void search(string query)
+        public ArrayList search(string query)
         {
+            objArray = new ArrayList();
 
             Google.Apis.Customsearch.v1.CseResource.ListRequest listRequest = customSearchService.Cse.List(query);
             listRequest.Cx = searchEngineId;
             listRequest.SearchType = Google.Apis.Customsearch.v1.CseResource.ListRequest.SearchTypeEnum.Image;
 
-            List<Result> result = new List<Result>();
-
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 1; i++)
             {
 
-                listRequest.Start = (i * 10) + 1;
+                listRequest.Start = (i*10) + 1;
                 Search search = listRequest.Execute();
 
                 foreach (var item in search.Items)
                 {
-                    result.Add(item);
+                    Image tempimg = new Image();
+                    tempimg.title = item.Title;
+                    tempimg.link = item.Link;
+
+
+                    objArray.Add(tempimg);
                 }
             }
-
-            int j = 0;
-
-            foreach (var item in result)
-            {
-                j++;
-                Console.WriteLine("Nr: " + j + " Title : " + item.Title + Environment.NewLine + "Link : " + item.Link + Environment.NewLine + Environment.NewLine);
-            }
-
+            return objArray;
         }
     }
 }
