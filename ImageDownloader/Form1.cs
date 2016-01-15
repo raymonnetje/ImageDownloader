@@ -15,7 +15,7 @@ namespace ImageDownloader
     public partial class Form1 : Form
     {
 
-        Downloader downloader;
+        Grabber grabber;
         public Form1()
         {
              const string apiKey = "AIzaSyC3u5jYwwZVqSq-JQge2gYHqDKErrCo1Sc";
@@ -23,13 +23,18 @@ namespace ImageDownloader
 
              InitializeComponent();
 
-             downloader = new Downloader(apiKey, searchEngineId);
+             grabber = new Grabber(apiKey, searchEngineId);
         }
 
         private void search_Click(object sender, EventArgs e)
         {
-            downloader.search(searchBox.Text.ToString());
+            grabber.search(searchBox.Text.ToString());
             
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
