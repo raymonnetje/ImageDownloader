@@ -8,5 +8,6 @@ namespace ImageDownloader
 {
     public class Downloader
     {
+        //comment
     }
 }
