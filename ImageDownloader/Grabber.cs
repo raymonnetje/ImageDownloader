@@ -11,7 +11,7 @@ namespace ImageDownloader
     public class Grabber
     {
         CustomsearchService customSearchService;
-        string searchEngineId; 
+        string searchEngineId;
 
         public Grabber(string apiKey, string searchEngineId)
         {
@@ -20,9 +20,9 @@ namespace ImageDownloader
         }
 
 
-       
-  
-       
+
+
+
 
         public void search(string query)
         {
@@ -32,7 +32,7 @@ namespace ImageDownloader
             listRequest.SearchType = Google.Apis.Customsearch.v1.CseResource.ListRequest.SearchTypeEnum.Image;
 
             List<Result> result = new List<Result>();
-            
+
             for (int i = 0; i < 10; i++)
             {
 
@@ -52,7 +52,7 @@ namespace ImageDownloader
                 j++;
                 Console.WriteLine("Nr: " + j + " Title : " + item.Title + Environment.NewLine + "Link : " + item.Link + Environment.NewLine + Environment.NewLine);
             }
-            
+
         }
     }
 }
