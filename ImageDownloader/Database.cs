@@ -18,7 +18,7 @@ namespace ImageDownloader
             
         }
 
-        public Boolean storeQuery(String query)
+        public Boolean storeQuery(String query, ArrayList<Image> images)
         {
             try
             {
