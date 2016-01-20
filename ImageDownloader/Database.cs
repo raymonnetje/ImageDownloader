@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data.SQLite;
+using System.Collections;
+using System.Data;
 
 namespace ImageDownloader
 {
@@ -13,32 +15,41 @@ namespace ImageDownloader
 
         public Database()
         {
-            sqliteDbConnection = new SQLiteConnection("Data Source=ImageDownloader.s3db; FailIfMissing=True;");
-
-            
+            sqliteDbConnection = new SQLiteConnection("Data Source=ImageDownloader.s3db; FailIfMissing=True;");            
         }
 
-        public Boolean storeQuery(String query, ArrayList<Image> images)
+        public void storeQuery(String query, ArrayList images)
         {
-            try
-            {
-                string sql = "insert into Queryawsdf (queryString) values ('" + query + "')";
+            sqliteDbConnection.Open();
 
-                sqliteDbConnection.Open();
-                
-                SQLiteCommand command = new SQLiteCommand(sql, sqliteDbConnection);
-                int r = command.ExecuteNonQuery();
-                Console.WriteLine("Query resultaat: " + r.ToString());
-                long queryId = sqliteDbConnection.LastInsertRowId;
-                sqliteDbConnection.Close();
-                return true;
-            }
-            catch (Exception crap)
-            {
-                Console.WriteLine(crap.ToString());
-                return false;
+            SQLiteCommand cmd = sqliteDbConnection.CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "insert into Query (queryString) values ('" + query + "')";
+            cmd.Parameters.Add(new SQLiteParameter("@parameter", query));
+            int r = cmd.ExecuteNonQuery();
+            
+            Console.WriteLine("Query resultaat: " + r.ToString());
+            long queryId = sqliteDbConnection.LastInsertRowId;
 
+            foreach (Image image in images)
+            {
+                try
+                {
+                    cmd = sqliteDbConnection.CreateCommand();
+                    cmd.CommandType = CommandType.Text;
+                    cmd.CommandText = "insert into Image (Title, Url, QueryId) values (@imageTitle, @imageLink, @queryId)";
+                    cmd.Parameters.Add(new SQLiteParameter("@imageTitle", image.title));
+                    cmd.Parameters.Add(new SQLiteParameter("@imageLink", image.link));
+                    cmd.Parameters.Add(new SQLiteParameter("@queryId", queryId));
+                    r = cmd.ExecuteNonQuery();
+                }
+                catch (Exception crap)
+                {
+                    Console.WriteLine(crap.ToString());
+                }
             }
+
+            sqliteDbConnection.Close();
         }
     }
 }

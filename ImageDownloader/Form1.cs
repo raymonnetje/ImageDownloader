@@ -37,7 +37,9 @@ namespace ImageDownloader
             Console.WriteLine(temp.Count);
             try
             {
+                Database db = new Database();
                 downloader.download(temp, searchBox.Text);
+                db.storeQuery(searchBox.Text, temp);
             }
             catch (Exception exception)
             {
