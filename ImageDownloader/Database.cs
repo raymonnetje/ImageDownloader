@@ -69,7 +69,7 @@ namespace ImageDownloader
             while(reader.Read())
             {
                 tempQuery = new Query();
-                tempQuery.queryId = crypt.DecryptString(reader["queryId"].ToString());
+                tempQuery.queryId = (reader["queryId"].ToString());
                 tempQuery.queryText = crypt.DecryptString(reader["queryString"].ToString());
                 queryList.Add(tempQuery);
             }
@@ -96,9 +96,9 @@ namespace ImageDownloader
             while (reader.Read())
             {
                 tempImage = new Image();
-                tempImage.link =    reader["imageLink"].ToString();
-                tempImage.title =   reader["imageTitle"].ToString();
-                tempImage.path =    reader["imagePath"].ToString();
+                tempImage.link =    crypt.DecryptString(reader["Url"].ToString());
+                tempImage.title =   crypt.DecryptString(reader["Title"].ToString());
+                tempImage.path =    reader["Path"].ToString();
                 imageList.Add(tempImage);
             }
 
