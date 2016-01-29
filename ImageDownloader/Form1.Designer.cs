@@ -100,6 +100,7 @@
             this.queryComboBox.Size = new System.Drawing.Size(224, 21);
             this.queryComboBox.TabIndex = 3;
             this.queryComboBox.SelectedValueChanged += new System.EventHandler(this.queryComboBox_SelectedValueChanged);
+            this.queryComboBox.MouseClick += new System.Windows.Forms.MouseEventHandler(this.queryComboBox_MouseClick);
             // 
             // label1
             // 

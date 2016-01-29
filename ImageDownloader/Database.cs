@@ -62,7 +62,7 @@ namespace ImageDownloader
 
             SQLiteCommand cmd = sqliteDbConnection.CreateCommand();
             cmd.CommandType = CommandType.Text;
-            cmd.CommandText = "Select * FROM Query";
+            cmd.CommandText = "SELECT * FROM Query INNER JOIN Image ON Query.QueryId=Image.QueryId GROUP BY Query.QueryId";
             SQLiteDataReader reader = cmd.ExecuteReader();
 
             Query tempQuery;
@@ -87,7 +87,7 @@ namespace ImageDownloader
 
             SQLiteCommand cmd = sqliteDbConnection.CreateCommand();
             cmd.CommandType = CommandType.Text;
-            cmd.CommandText = "SELECT * FROM Image WHERE QueryId = @queryId";
+            cmd.CommandText = "SELECT * FROM Query INNER JOIN Image ON Query.QueryId=Image.QueryId WHERE Query.QueryId = @queryId";
             cmd.Parameters.Add(new SQLiteParameter("@queryId", query.queryId));
 
             SQLiteDataReader reader = cmd.ExecuteReader();

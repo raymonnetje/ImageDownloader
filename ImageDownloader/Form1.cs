@@ -83,11 +83,18 @@ namespace ImageDownloader
 
         private void queryComboBox_SelectedValueChanged(object sender, EventArgs e)
         {
+            imageTable.Rows.Clear();
+            imageTable.Refresh();
             List<Image> imageList = db.loadQueryImages(queryComboBox.SelectedItem as Query);
             foreach(Image tempImage in imageList)
             {
                 imageTable.Rows.Add(tempImage.title, tempImage.link, tempImage.path);
             }
+        }
+
+        private void queryComboBox_MouseClick(object sender, MouseEventArgs e)
+        {
+            queryComboBox.DroppedDown = true;
         }
     }
 }
