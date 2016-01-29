@@ -8,8 +8,8 @@ namespace ImageDownloader
 {
     public class Image
     {
+        public string path { get; set; }
         public string title { get; set; }
         public string link { get; set; }
-
     }
 }

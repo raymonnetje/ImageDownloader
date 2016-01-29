@@ -33,7 +33,7 @@ namespace ImageDownloader
                     stream.Flush();
                     stream.Close();
                     Console.WriteLine(tmpImage.link);
-                    SaveImage(bitmap.RawFormat);
+                    tmpImage.path = SaveImage(title, bitmap.RawFormat);
                 }
                 catch (Exception e)
                 {
@@ -65,20 +65,17 @@ namespace ImageDownloader
             } 
         }
 
-        public Bitmap GetImage()
+        public String SaveImage(string title, ImageFormat format)
         {
-            return bitmap;
-        }
-
-        public void SaveImage(ImageFormat format)
-        {
+            string pathTmp = "";
             count++;
             if (bitmap != null)
             {
                 Console.Write(format.ToString());
-                bitmap.Save(@"c:\\saves\\" + count +".jpeg", ImageFormat.Jpeg);
-
+                pathTmp = @"c:\\saves\\" + title + "\\" + count + ".jpeg";
+                bitmap.Save(pathTmp, ImageFormat.Jpeg);
             }
+            return pathTmp;
         }
     }
 }
