@@ -9,8 +9,10 @@ using System.Data;
 
 namespace ImageDownloader
 {
-    class Database
+    public class Database
     {
+        Crypt crypt = new Crypt();
+
         SQLiteConnection sqliteDbConnection; 
 
         public Database()
@@ -24,8 +26,8 @@ namespace ImageDownloader
 
             SQLiteCommand cmd = sqliteDbConnection.CreateCommand();
             cmd.CommandType = CommandType.Text;
-            cmd.CommandText = "insert into Query (queryString) values ('" + query + "')";
-            cmd.Parameters.Add(new SQLiteParameter("@parameter", query));
+            cmd.CommandText = "insert into Query (queryString) values (@query)";
+            cmd.Parameters.Add(new SQLiteParameter("@query", crypt.EncryptString(query)));
             int r = cmd.ExecuteNonQuery();
             
             Console.WriteLine("Query resultaat: " + r.ToString());
@@ -37,10 +39,11 @@ namespace ImageDownloader
                 {
                     cmd = sqliteDbConnection.CreateCommand();
                     cmd.CommandType = CommandType.Text;
-                    cmd.CommandText = "insert into Image (Title, Url, QueryId) values (@imageTitle, @imageLink, @queryId)";
-                    cmd.Parameters.Add(new SQLiteParameter("@imageTitle", image.title));
-                    cmd.Parameters.Add(new SQLiteParameter("@imageLink", image.link));
+                    cmd.CommandText = "insert into Image (Title, Url, QueryId, Path) values (@imageTitle, @imageLink, @queryId, @path)";
+                    cmd.Parameters.Add(new SQLiteParameter("@imageTitle", crypt.EncryptString(image.title)));
+                    cmd.Parameters.Add(new SQLiteParameter("@imageLink", crypt.EncryptString(image.link)));
                     cmd.Parameters.Add(new SQLiteParameter("@queryId", queryId));
+                    cmd.Parameters.Add(new SQLiteParameter("@path", image.path));
                     r = cmd.ExecuteNonQuery();
                 }
                 catch (Exception crap)
@@ -51,5 +54,58 @@ namespace ImageDownloader
 
             sqliteDbConnection.Close();
         }
+
+        public List<Query> loadQuerys()
+        {
+            List<Query> queryList = new List<Query>();
+            sqliteDbConnection.Open();
+
+            SQLiteCommand cmd = sqliteDbConnection.CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "Select * FROM Query";
+            SQLiteDataReader reader = cmd.ExecuteReader();
+
+            Query tempQuery;
+            while(reader.Read())
+            {
+                tempQuery = new Query();
+                tempQuery.queryId = crypt.DecryptString(reader["queryId"].ToString());
+                tempQuery.queryText = crypt.DecryptString(reader["queryString"].ToString());
+                queryList.Add(tempQuery);
+            }
+
+            sqliteDbConnection.Close();
+
+            return queryList;
+        }
+
+        public List<Image> loadQueryImages(Query query)
+        {
+            sqliteDbConnection.Open();
+
+            List<Image> imageList = new List<Image>();
+
+            SQLiteCommand cmd = sqliteDbConnection.CreateCommand();
+            cmd.CommandType = CommandType.Text;
+            cmd.CommandText = "SELECT * FROM Image WHERE QueryId = @queryId";
+            cmd.Parameters.Add(new SQLiteParameter("@queryId", query.queryId));
+
+            SQLiteDataReader reader = cmd.ExecuteReader();
+
+            Image tempImage;
+            while (reader.Read())
+            {
+                tempImage = new Image();
+                tempImage.link =    reader["imageLink"].ToString();
+                tempImage.title =   reader["imageTitle"].ToString();
+                tempImage.path =    reader["imagePath"].ToString();
+                imageList.Add(tempImage);
+            }
+
+            sqliteDbConnection.Close();
+
+            return imageList;
+        }
+
     }
 }

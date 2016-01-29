@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SQLite;
 
 namespace ImageDownloader
 {
@@ -19,42 +20,74 @@ namespace ImageDownloader
 
         Grabber grabber;
         Downloader downloader;
+        Database db;
+        Crypt aes;
+        Key sleutels;
 
         public Form1()
         {
-             const string apiKey = "AIzaSyC3u5jYwwZVqSq-JQge2gYHqDKErrCo1Sc";
-             const string searchEngineId = "002939223692517534743:_6gyhcdvzrg";
+            InitializeComponent();
 
-             InitializeComponent();
+            const string apiKey = "AIzaSyC3u5jYwwZVqSq-JQge2gYHqDKErrCo1Sc";
+            const string searchEngineId = "002939223692517534743:_6gyhcdvzrg";
+            
+            grabber = new Grabber(apiKey, searchEngineId);
+            aes = new Crypt();
 
-             grabber = new Grabber(apiKey, searchEngineId);
+            
+
+            db = new Database();
+
+           fillComboBox(db.loadQuerys());
         }
 
-        private void search_Click(object sender, EventArgs e)
+        private void query()
         {
             downloader = new Downloader();
             ArrayList temp = grabber.search(searchBox.Text.ToString());
             Console.WriteLine(temp.Count);
             try
             {
-                Database db = new Database();
+                
                 downloader.download(temp, searchBox.Text);
                 db.storeQuery(searchBox.Text, temp);
             }
             catch (Exception exception)
             {
-                
+
                 Console.WriteLine(exception);
             }
-            
-            
-
-            
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void search_Click(object sender, EventArgs e)
         {
+            query();
+        }
 
+        private void searchBox_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                query();
+                e.Handled = true;
+            }
+        }
+        
+        public void fillComboBox(List<Query> queryList)
+        {
+            foreach(Query tempQuery in queryList)
+            {
+                queryComboBox.Items.Add(tempQuery);
+            }
+        }
+
+        private void queryComboBox_SelectedValueChanged(object sender, EventArgs e)
+        {
+            List<Image> imageList = db.loadQueryImages(queryComboBox.SelectedItem as Query);
+            foreach(Image tempImage in imageList)
+            {
+                imageTable.Rows.Add(tempImage.title, tempImage.link, tempImage.path);
+            }
         }
     }
 }
