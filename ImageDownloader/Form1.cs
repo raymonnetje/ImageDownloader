@@ -34,7 +34,8 @@ namespace ImageDownloader
             grabber = new Grabber(apiKey, searchEngineId);
             aes = new Crypt();
 
-            
+
+            imageTable.AllowUserToAddRows = false;
 
             db = new Database();
 
